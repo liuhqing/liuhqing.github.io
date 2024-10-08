@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="1. 以一个docker-compose.yml文件来开始这篇博客吧！1234567891011121314151617181920212223242526272829# 命令执行 docker-compose up -dversion: &#x27;3.9&#x27;services:  mysql:    image: mysql:8.0.32    container_name: mysql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个例子理解Docker生态系统">
+<meta property="og:url" content="https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/index.html">
+<meta property="og:site_name" content="lhqblogs">
+<meta property="og:description" content="1. 以一个docker-compose.yml文件来开始这篇博客吧！1234567891011121314151617181920212223242526272829# 命令执行 docker-compose up -dversion: &#x27;3.9&#x27;services:  mysql:    image: mysql:8.0.32    container_name: mysql">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-10-08T14:45:17.000Z">
+<meta property="article:modified_time" content="2024-10-08T15:14:02.618Z">
+<meta property="article:author" content="Hanqing Liu">
+<meta property="article:tag" content="Docker">
+<meta property="article:tag" content="DevOps">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>一个例子理解Docker生态系统</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">tags</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/10/07/Linux%E4%BA%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&text=一个例子理解Docker生态系统"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&title=一个例子理解Docker生态系统"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&is_video=false&description=一个例子理解Docker生态系统"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=一个例子理解Docker生态系统&body=Check out this article: https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&title=一个例子理解Docker生态系统"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&title=一个例子理解Docker生态系统"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&title=一个例子理解Docker生态系统"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&title=一个例子理解Docker生态系统"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&name=一个例子理解Docker生态系统&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&t=一个例子理解Docker生态系统"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BB%A5%E4%B8%80%E4%B8%AAdocker-compose-yml%E6%96%87%E4%BB%B6%E6%9D%A5%E5%BC%80%E5%A7%8B%E8%BF%99%E7%AF%87%E5%8D%9A%E5%AE%A2%E5%90%A7%EF%BC%81"><span class="toc-number">1.</span> <span class="toc-text">1. 以一个docker-compose.yml文件来开始这篇博客吧！</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-mysql-%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.1.</span> <span class="toc-text">1.1. mysql 服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-mysql-job-dbdata-%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.2.</span> <span class="toc-text">1.2. mysql-job-dbdata 服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E6%80%BB%E7%BB%93"><span class="toc-number">1.3.</span> <span class="toc-text">1.3. 总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%80%E4%B9%88%E6%98%AF%E5%AE%B9%E5%99%A8%EF%BC%9F"><span class="toc-number">2.</span> <span class="toc-text">2. 什么是容器？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%AE%B9%E5%99%A8%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-number">2.1.</span> <span class="toc-text">2.1. 容器的特点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E5%AE%B9%E5%99%A8%E4%B8%8E%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%AF%94%E8%BE%83"><span class="toc-number">2.2.</span> <span class="toc-text">2.2. 容器与虚拟机的比较</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E5%AE%B9%E5%99%A8%E7%9A%84%E7%BB%84%E6%88%90"><span class="toc-number">2.3.</span> <span class="toc-text">2.3. 容器的组成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E5%AE%B9%E5%99%A8%E7%9A%84%E7%AE%A1%E7%90%86%E4%B8%8E%E7%BC%96%E6%8E%92"><span class="toc-number">2.4.</span> <span class="toc-text">2.4. 容器的管理与编排</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">2.5.</span> <span class="toc-text">2.5. 使用场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-%E6%80%BB%E7%BB%93"><span class="toc-number">2.6.</span> <span class="toc-text">2.6. 总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%BB%80%E4%B9%88%E6%98%AF%E9%95%9C%E5%83%8F%EF%BC%9F"><span class="toc-number">3.</span> <span class="toc-text">3. 什么是镜像？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E9%95%9C%E5%83%8F%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-number">3.1.</span> <span class="toc-text">3.1. 镜像的特点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E9%95%9C%E5%83%8F%E7%9A%84%E7%BB%84%E6%88%90"><span class="toc-number">3.2.</span> <span class="toc-text">3.2. 镜像的组成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F"><span class="toc-number">3.3.</span> <span class="toc-text">3.3. 创建镜像</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E7%AE%A1%E7%90%86%E9%95%9C%E5%83%8F"><span class="toc-number">3.4.</span> <span class="toc-text">3.4. 管理镜像</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E9%95%9C%E5%83%8F%E4%B8%8E%E5%AE%B9%E5%99%A8%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.5.</span> <span class="toc-text">3.5. 镜像与容器的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-%E6%80%BB%E7%BB%93"><span class="toc-number">3.6.</span> <span class="toc-text">3.6. 总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%BB%80%E4%B9%88%E6%98%AFVolume%EF%BC%9F"><span class="toc-number">4.</span> <span class="toc-text">3. 什么是Volume？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-Volume-%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-number">4.1.</span> <span class="toc-text">3.1. Volume 的特点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Volume-%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="toc-number">4.2.</span> <span class="toc-text">3.2. Volume 的类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E4%BD%BF%E7%94%A8-Volume-%E7%9A%84%E7%A4%BA%E4%BE%8B"><span class="toc-number">4.3.</span> <span class="toc-text">3.3. 使用 Volume 的示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E6%80%BB%E7%BB%93"><span class="toc-number">4.4.</span> <span class="toc-text">3.4. 总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%A1%A5%E5%85%85"><span class="toc-number">5.</span> <span class="toc-text">4. 补充</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-volumes"><span class="toc-number">5.1.</span> <span class="toc-text">1. volumes:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A3%E9%87%8A%EF%BC%9A"><span class="toc-number">5.1.1.</span> <span class="toc-text">解释：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BE%E4%BE%8B%E5%9C%BA%E6%99%AF%EF%BC%9A"><span class="toc-number">5.1.2.</span> <span class="toc-text">举例场景：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-volumes-from"><span class="toc-number">5.2.</span> <span class="toc-text">2. volumes_from:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A3%E9%87%8A%EF%BC%9A-1"><span class="toc-number">5.2.1.</span> <span class="toc-text">解释：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BE%E4%BE%8B%E5%9C%BA%E6%99%AF%EF%BC%9A-1"><span class="toc-number">5.2.2.</span> <span class="toc-text">举例场景：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A"><span class="toc-number">5.3.</span> <span class="toc-text">总结：</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        一个例子理解Docker生态系统
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Hanqing Liu</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-10-08T14:45:17.000Z" class="dt-published" itemprop="datePublished">2024-10-08</time>
+        
+      
+    </div>
+
+
+      
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/DevOps/" rel="tag">DevOps</a>, <a class="p-category" href="/tags/Docker/" rel="tag">Docker</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="1-以一个docker-compose-yml文件来开始这篇博客吧！"><a href="#1-以一个docker-compose-yml文件来开始这篇博客吧！" class="headerlink" title="1. 以一个docker-compose.yml文件来开始这篇博客吧！"></a>1. 以一个<code>docker-compose.yml</code>文件来开始这篇博客吧！</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 命令执行 docker-compose up -d</span></span><br><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3.9&#x27;</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">mysql:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">mysql:8.0.32</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">mysql</span></span><br><span class="line">    <span class="attr">command:</span> <span class="string">--default-authentication-plugin=mysql_native_password</span></span><br><span class="line">    <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">TZ:</span> <span class="string">Asia/Shanghai</span></span><br><span class="line">      <span class="comment">#      MYSQL_ALLOW_EMPTY_PASSWORD: &#x27;yes&#x27; # 可配置无密码，注意配置 SPRING_DATASOURCE_PASSWORD=</span></span><br><span class="line">      <span class="attr">MYSQL_ROOT_PASSWORD:</span> <span class="number">123456</span></span><br><span class="line">      <span class="attr">MYSQL_USER:</span> <span class="string">xfg</span></span><br><span class="line">      <span class="attr">MYSQL_PASSWORD:</span> <span class="number">123456</span></span><br><span class="line">    <span class="attr">depends_on:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">mysql-job-dbdata</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">&quot;3307:3306&quot;</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">./sql:/docker-entrypoint-initdb.d</span></span><br><span class="line">    <span class="attr">volumes_from:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">mysql-job-dbdata</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># 自动加载数据</span></span><br><span class="line">  <span class="attr">mysql-job-dbdata:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">alpine:3.18.2</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">mysql-job-dbdata</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/v</span></span><br></pre></td></tr></table></figure>
+
+<p>这段 <code>docker-compose.yml</code> 文件是用来定义并启动 MySQL 数据库服务的配置文件，通过 <code>docker-compose up -d</code>命令可以以后台模式启动这些服务。</p>
+<p><code>version: &#39;3.9&#39;</code></p>
+<ul>
+<li>定义了 <code>docker-compose</code> 文件的版本。<code>3.9</code> 代表使用的是 Docker Compose 的版本号，用于向下兼容和支持特定功能。</li>
+</ul>
+<p><code>services</code></p>
+<ul>
+<li><code>services</code> 是 Docker Compose 中用于定义一组容器的关键字。每个 <code>service</code> 定义一个独立的容器。</li>
+</ul>
+<h3 id="1-1-mysql-服务"><a href="#1-1-mysql-服务" class="headerlink" title="1.1. mysql 服务"></a>1.1. <code>mysql</code> 服务</h3><p>这是用于启动 MySQL 数据库的服务，具体的配置如下：</p>
+<p><code>image: mysql:8.0.32</code></p>
+<ul>
+<li>这个参数指定使用 <code>mysql</code> 的官方镜像，并且使用 8.0.32 版本。</li>
+</ul>
+<p><code>container_name: mysql</code></p>
+<ul>
+<li>指定容器的名称为 <code>mysql</code>，这样在 Docker 中可以方便地通过容器名来管理和操作该容器。</li>
+</ul>
+<p><code>command: --default-authentication-plugin=mysql_native_password</code></p>
+<ul>
+<li>这是一个用于配置 MySQL 服务器的启动命令，指定了 <code>mysql_native_password</code> 作为默认的身份验证插件。此插件兼容性较好，适用于许多旧版本的客户端连接。</li>
+</ul>
+<p><code>restart: always</code></p>
+<ul>
+<li>这个参数表示容器如果停止（包括因失败或重启 Docker 引擎等原因），会自动重启。</li>
+</ul>
+<p><code>environment</code></p>
+<ul>
+<li><code>environment</code>定义了一些环境变量来配置 MySQL 服务的行为：<ul>
+<li><code>TZ: Asia/Shanghai</code>：设置容器内的时区为 “Asia&#x2F;Shanghai”（上海时区）。</li>
+<li><code>MYSQL_ROOT_PASSWORD: 123456</code>：设置 MySQL root 用户的密码为 <code>123456</code>。</li>
+<li><code>MYSQL_USER: xfg</code>：创建一个名为 <code>xfg</code> 的普通用户。</li>
+<li><code>MYSQL_PASSWORD: 123456</code>：为用户 <code>xfg</code> 设置密码为 <code>123456</code>。</li>
+</ul>
+</li>
+</ul>
+<p><code>depends_on</code></p>
+<ul>
+<li><code>depends_on: mysql-job-dbdata</code> 表示 <code>mysql</code> 容器依赖于 <code>mysql-job-dbdata</code> 容器，这意味着在启动 <code>mysql</code> 容器之前，会先启动 <code>mysql-job-dbdata</code> 容器。</li>
+</ul>
+<p><code>ports</code></p>
+<ul>
+<li><code>ports: &quot;3307:3306&quot;</code> 将宿主机的 3307 端口映射到容器内部的 3306 端口，即 MySQL 在容器内监听 3306 端口，而外部可以通过访问主机的 3307 端口来连接 MySQL。</li>
+</ul>
+<p><code>volumes</code></p>
+<ul>
+<li><code>volumes</code> 定义了一个卷映射，用于将主机目录 <code>./sql</code> 挂载到容器的 <code>/docker-entrypoint-initdb.d</code> 目录中。这个目录可以放置一些初始化的 SQL 脚本，当容器启动时，这些脚本会被 MySQL 自动执行。</li>
+</ul>
+<p><code>volumes_from</code></p>
+<ul>
+<li><code>volumes_from: mysql-job-dbdata</code> 表示 <code>mysql</code> 容器会共享 <code>mysql-job-dbdata</code> 容器中的卷。这个卷对应数据库的数据存储位置。</li>
+</ul>
+<h3 id="1-2-mysql-job-dbdata-服务"><a href="#1-2-mysql-job-dbdata-服务" class="headerlink" title="1.2. mysql-job-dbdata 服务"></a>1.2. <code>mysql-job-dbdata</code> 服务</h3><p>这个服务用于创建一个独立的数据卷容器，以保存 MySQL 数据文件。</p>
+<p><code>image: alpine:3.18.2</code></p>
+<ul>
+<li>使用 <code>alpine</code> 这个轻量级 Linux 发行版作为基础镜像，版本为 <code>3.18.2</code>。</li>
+</ul>
+<p><code>container_name: mysql-job-dbdata</code></p>
+<ul>
+<li>容器名称设置为 <code>mysql-job-dbdata</code>。</li>
+</ul>
+<p><code>volumes</code></p>
+<ul>
+<li><code>volumes: /var/lib/mysql</code> 表示创建一个挂载点，将这个数据卷存储到 <code>/var/lib/mysql</code> 目录中，MySQL 的数据库文件会被持久化存储到这个目录。</li>
+</ul>
+<h3 id="1-3-总结"><a href="#1-3-总结" class="headerlink" title="1.3. 总结"></a>1.3. 总结</h3><ul>
+<li>这个配置文件启动了两个容器：<ol>
+<li>一个是 <code>mysql</code> 容器，提供 MySQL 数据库服务，设置了端口映射、环境变量和持久化数据卷。</li>
+<li>另一个是 <code>mysql-job-dbdata</code> 容器，专门用于保存数据库文件数据，确保 MySQL 数据的持久性。</li>
+</ol>
+</li>
+</ul>
+<p>通过这种方式，MySQL 的数据即使容器被销毁也不会丢失，因为数据保存在了持久化的卷中。</p>
+<h2 id="2-什么是容器？"><a href="#2-什么是容器？" class="headerlink" title="2. 什么是容器？"></a>2. 什么是容器？</h2><p><strong>容器</strong>是轻量级的、可移植的软件打包和运行环境，它可以将应用程序及其所有依赖项（如库、配置文件等）打包在一起，从而确保应用在不同环境中能够一致地运行。容器使用操作系统级别的虚拟化技术，通常比传统的虚拟机更高效。以下是关于容器的详细解释：</p>
+<h3 id="2-1-容器的特点"><a href="#2-1-容器的特点" class="headerlink" title="2.1. 容器的特点"></a>2.1. 容器的特点</h3><ul>
+<li><strong>轻量级</strong>：<ul>
+<li>容器在同一操作系统内核上运行，启动速度快，资源开销小。多个容器可以共享宿主机的内核，而不需要为每个应用程序单独运行一个完整的操作系统。</li>
+</ul>
+</li>
+<li><strong>可移植性</strong>：<ul>
+<li>容器可以在任何支持容器化技术的环境中运行，包括开发环境、测试环境和生产环境。只需将容器镜像传输到目标环境，即可保证应用的运行一致性。</li>
+</ul>
+</li>
+<li><strong>隔离性</strong>：<ul>
+<li>每个容器都是相互独立的，具有自己的文件系统、网络接口和进程空间。容器之间不会相互影响，这使得开发和部署应用程序变得更加安全。</li>
+</ul>
+</li>
+<li><strong>可扩展性</strong>：<ul>
+<li>容器的数量可以根据需求进行动态扩展和缩减，适合处理负载波动的应用。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-2-容器与虚拟机的比较"><a href="#2-2-容器与虚拟机的比较" class="headerlink" title="2.2. 容器与虚拟机的比较"></a>2.2. 容器与虚拟机的比较</h3><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>容器</th>
+<th>虚拟机</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>启动时间</td>
+<td>秒级启动</td>
+<td>分钟级启动</td>
+</tr>
+<tr>
+<td>资源占用</td>
+<td>轻量，多个容器共享宿主机内核</td>
+<td>重量，每个虚拟机运行独立的操作系统</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>更高效，几乎没有虚拟化开销</td>
+<td>相对较慢，因为要虚拟化硬件</td>
+</tr>
+<tr>
+<td>兼容性</td>
+<td>与宿主机 OS 版本兼容</td>
+<td>需要虚拟化软件和完整操作系统</td>
+</tr>
+<tr>
+<td>隔离程度</td>
+<td>进程级隔离</td>
+<td>硬件级隔离</td>
+</tr>
+</tbody></table>
+<h3 id="2-3-容器的组成"><a href="#2-3-容器的组成" class="headerlink" title="2.3. 容器的组成"></a>2.3. 容器的组成</h3><ul>
+<li><strong>容器镜像</strong>：<ul>
+<li>容器是由镜像创建的。镜像是一个只读的模板，包含运行应用程序所需的所有文件和依赖项。镜像可以从 Docker Hub 等容器注册中心获取。</li>
+</ul>
+</li>
+<li><strong>容器运行时</strong>：<ul>
+<li>容器在运行时由容器引擎（如 Docker）管理。容器引擎负责创建、启动、停止和删除容器。</li>
+</ul>
+</li>
+<li><strong>文件系统</strong>：<ul>
+<li>每个容器都有自己的文件系统，通常是基于镜像创建的。容器内的文件系统可以是读写的，允许在运行时修改文件。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-4-容器的管理与编排"><a href="#2-4-容器的管理与编排" class="headerlink" title="2.4. 容器的管理与编排"></a>2.4. 容器的管理与编排</h3><ul>
+<li><strong>Docker</strong>：<ul>
+<li>Docker 是最流行的容器管理工具，提供了创建、部署和管理容器的功能。</li>
+</ul>
+</li>
+<li><strong>Kubernetes</strong>：<ul>
+<li>Kubernetes 是一个开源的容器编排平台，用于自动化容器的部署、扩展和管理，适合大规模生产环境。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-5-使用场景"><a href="#2-5-使用场景" class="headerlink" title="2.5. 使用场景"></a>2.5. 使用场景</h3><ul>
+<li><strong>微服务架构</strong>：<ul>
+<li>容器非常适合微服务架构，将应用分解为多个小服务，每个服务运行在独立的容器中，便于开发、部署和扩展。</li>
+</ul>
+</li>
+<li><strong>持续集成和持续交付（CI&#x2F;CD）</strong>：<ul>
+<li>容器可以在开发、测试和生产环境中快速迁移，提高 CI&#x2F;CD 流程的效率。</li>
+</ul>
+</li>
+<li><strong>跨平台开发</strong>：<ul>
+<li>容器可以在不同的操作系统和云环境中运行，提供一致的开发和运行环境，降低因环境差异导致的问题。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-6-总结"><a href="#2-6-总结" class="headerlink" title="2.6. 总结"></a>2.6. 总结</h3><p>容器是现代应用程序开发和部署的重要工具，它们提供了一种轻量、可移植和高效的方式来打包和运行应用程序。通过容器技术，开发者可以更加专注于应用的开发与维护，同时确保在不同环境中的一致性与可靠性。</p>
+<h2 id="3-什么是镜像？"><a href="#3-什么是镜像？" class="headerlink" title="3. 什么是镜像？"></a>3. 什么是镜像？</h2><p>在 Docker 和其他容器技术中，<strong>镜像</strong>（Image）是用于创建容器的一个只读模板。它包含了运行某个应用程序所需的所有代码、库、依赖项和配置文件。镜像是容器化应用程序的核心概念之一，以下是关于镜像的详细解释：</p>
+<h3 id="3-1-镜像的特点"><a href="#3-1-镜像的特点" class="headerlink" title="3.1. 镜像的特点"></a>3.1. 镜像的特点</h3><ul>
+<li><strong>只读</strong>：<ul>
+<li>镜像的内容是只读的，创建容器时，容器会从镜像生成并运行。任何对容器内文件系统的修改不会影响到镜像本身。</li>
+</ul>
+</li>
+<li><strong>分层结构</strong>：<ul>
+<li>镜像是分层构建的，每一层代表一组文件或变更。每当修改或增加文件时，Docker 会创建一个新层，并将其与先前的层叠加。这个特性使得镜像在存储和管理上非常高效。</li>
+</ul>
+</li>
+<li><strong>可重用性</strong>：<ul>
+<li>镜像可以在多个容器之间共享，这意味着多个容器可以基于同一镜像运行而无需重复存储相同的文件。</li>
+</ul>
+</li>
+<li><strong>可版本控制</strong>：<ul>
+<li>镜像通常会有版本标签（如 <code>myapp:1.0</code>），允许用户轻松回退到之前的版本。</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-2-镜像的组成"><a href="#3-2-镜像的组成" class="headerlink" title="3.2. 镜像的组成"></a>3.2. 镜像的组成</h3><ul>
+<li><strong>基础镜像</strong>：<ul>
+<li>镜像可以基于其他镜像构建，基础镜像通常是一个完整的操作系统或应用程序运行时。例如，<code>ubuntu</code>或 <code>alpine</code> 镜像可以作为基础镜像。</li>
+</ul>
+</li>
+<li><strong>文件系统层</strong>：<ul>
+<li>镜像包含的文件系统层是容器运行所需的所有文件和目录。这些文件包括应用程序代码、库、工具等。</li>
+</ul>
+</li>
+<li><strong>元数据</strong>：<ul>
+<li>镜像还包含元数据，如创建时间、作者信息、命令（如 CMD 和 ENTRYPOINT）等，用于在启动容器时配置运行环境。</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-3-创建镜像"><a href="#3-3-创建镜像" class="headerlink" title="3.3. 创建镜像"></a>3.3. 创建镜像</h3><ul>
+<li><p><strong>Dockerfile</strong>：</p>
+<ul>
+<li>镜像通常通过编写 <code>Dockerfile</code> 文件来创建，<code>Dockerfile</code> 定义了镜像的构建步骤，包括所需的基础镜像、安装的依赖、复制的文件、设置的环境变量等。</li>
+</ul>
+<p>示例 <code>Dockerfile</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用 Ubuntu 作为基础镜像</span></span><br><span class="line">FROM ubuntu:20.04</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置维护者信息</span></span><br><span class="line">LABEL maintainer=<span class="string">&quot;your-email@example.com&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装依赖</span></span><br><span class="line">RUN apt-get update &amp;&amp; apt-get install -y \</span><br><span class="line">    python3 \</span><br><span class="line">    python3-pip</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制应用程序代码</span></span><br><span class="line">COPY app.py /app/app.py</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置工作目录</span></span><br><span class="line">WORKDIR /app</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置容器启动时执行的命令</span></span><br><span class="line">CMD [<span class="string">&quot;python3&quot;</span>, <span class="string">&quot;app.py&quot;</span>]</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>构建镜像</strong>：</p>
+<ul>
+<li>使用以下命令从 <code>Dockerfile</code> 构建镜像：</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t myapp:1.0 .</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="3-4-管理镜像"><a href="#3-4-管理镜像" class="headerlink" title="3.4. 管理镜像"></a>3.4. 管理镜像</h3><ul>
+<li><p><strong>列出镜像</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>删除镜像</strong>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rmi &lt;image_id&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>推送镜像到远程仓库</strong>：</p>
+<ul>
+<li>将镜像推送到 Docker Hub 或其他镜像仓库，以便其他用户或团队使用。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker push myapp:1.0</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>拉取镜像</strong>：</p>
+<ul>
+<li>从远程仓库下载镜像。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull ubuntu:20.04</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="3-5-镜像与容器的关系"><a href="#3-5-镜像与容器的关系" class="headerlink" title="3.5. 镜像与容器的关系"></a>3.5. 镜像与容器的关系</h3><ul>
+<li><strong>镜像是容器的蓝图</strong>：<ul>
+<li>当你从镜像启动一个容器时，Docker 会根据镜像创建一个新的文件系统实例。这个实例就是容器，它可以读写并与外部环境进行交互。</li>
+</ul>
+</li>
+<li><strong>镜像是静态的</strong>：<ul>
+<li>镜像本身是静态的，不会改变。容器在运行时对文件系统的任何修改只会在容器内生效，不会影响镜像。</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-6-总结"><a href="#3-6-总结" class="headerlink" title="3.6. 总结"></a>3.6. 总结</h3><p>镜像是 Docker 和容器化技术中的一个重要概念，它为应用程序提供了一个完整的、可移植的运行环境。通过镜像，开发者可以轻松创建、分发和运行应用程序，从而简化了开发和部署的流程。镜像的可重用性和灵活性使得容器化成为现代应用开发和部署的重要工具。</p>
+<h2 id="3-什么是Volume？"><a href="#3-什么是Volume？" class="headerlink" title="3. 什么是Volume？"></a>3. 什么是Volume？</h2><p>在 Docker 中，<strong>Volume（卷）</strong> 是一种用于持久化和管理数据的机制。卷允许用户将数据存储在容器之外，从而确保即使容器被删除或重启，数据仍然得以保留。</p>
+<ul>
+<li><strong>Volume</strong> 是一种特殊的目录，可以在 Docker 容器和宿主机之间共享数据。</li>
+<li>它可以被一个或多个容器使用，支持数据的持久化和共享。</li>
+</ul>
+<h3 id="3-1-Volume-的特点"><a href="#3-1-Volume-的特点" class="headerlink" title="3.1. Volume 的特点"></a>3.1. Volume 的特点</h3><ul>
+<li><strong>持久化数据</strong>：即使容器被删除或重新创建，卷中的数据仍然存在。适用于需要保存数据库文件、上传的文件等场景。</li>
+<li><strong>共享数据</strong>：可以在多个容器之间共享同一份数据。比如多个应用可以访问同一个数据库或配置文件。</li>
+<li><strong>性能优化</strong>：在很多情况下，使用卷可以比在容器内保存数据更加高效。Docker 对卷的管理有专门的优化，使得读写性能较高。</li>
+<li><strong>备份与恢复</strong>：可以方便地备份卷中的数据，或将其迁移到其他 Docker 环境。</li>
+</ul>
+<h3 id="3-2-Volume-的类型"><a href="#3-2-Volume-的类型" class="headerlink" title="3.2. Volume 的类型"></a>3.2. Volume 的类型</h3><p>Docker 支持几种不同类型的卷，主要包括：</p>
+<ul>
+<li><p><strong>命名卷（Named Volumes）</strong>：通过 Docker 管理命名的卷，可以在多个容器之间共享。通过 <code>docker volume create</code> 命令创建，使用时通过卷名引用。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">bash</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Copy code</span><br><span class="line">docker volume create my_volume</span><br><span class="line">docker run -v my_volume:/data my_image</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>绑定挂载（Bind Mounts）</strong>：将宿主机上的一个目录或文件挂载到容器中，使用时需要指定宿主机路径。适合开发时需要频繁访问宿主机文件的场景。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">bash</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Copy code</span><br><span class="line">docker run -v /host/path:/container/path my_image</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="3-3-使用-Volume-的示例"><a href="#3-3-使用-Volume-的示例" class="headerlink" title="3.3. 使用 Volume 的示例"></a>3.3. 使用 Volume 的示例</h3><p>在 <code>docker-compose.yml</code> 中使用 Volume 的例子：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">yaml</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="string">Copy</span> <span class="string">code</span></span><br><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3.9&#x27;</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">db:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">mysql:5.7</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">MYSQL_ROOT_PASSWORD:</span> <span class="string">example</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">db_data:/var/lib/mysql</span></span><br><span class="line"></span><br><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="attr">db_data:</span></span><br></pre></td></tr></table></figure>
+
+<p>在这个例子中：</p>
+<ul>
+<li><code>db_data</code> 是一个命名卷，用于持久化 MySQL 数据库的数据，挂载到容器内的 <code>/var/lib/mysql</code> 目录。</li>
+<li>当数据库服务运行时，数据将存储在卷中，而不是容器内部。</li>
+</ul>
+<h3 id="3-4-总结"><a href="#3-4-总结" class="headerlink" title="3.4. 总结"></a>3.4. 总结</h3><p>Docker 中的 Volume 是一个强大的工具，可以用于持久化数据和在多个容器之间共享数据。通过使用 Volume，用户可以更好地管理数据，确保数据的安全性和持久性，特别是在开发和生产环境中。</p>
+<h2 id="4-补充"><a href="#4-补充" class="headerlink" title="4. 补充"></a>4. 补充</h2><p>在 <code>docker-compose.yml</code> 文件中，<code>volumes</code> 和 <code>volumes_from</code> 是与 Docker 容器的存储管理相关的配置选项。它们的作用是将宿主机上的文件或目录与容器内部的文件系统进行挂载，从而实现数据的持久化或共享。让我们详细解释这两部分的配置：</p>
+<h3 id="1-volumes"><a href="#1-volumes" class="headerlink" title="1. volumes:"></a>1. <code>volumes:</code></h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">volumes:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">./sql:/docker-entrypoint-initdb.d</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="解释："><a href="#解释：" class="headerlink" title="解释："></a>解释：</h4><ul>
+<li><code>volumes</code> 指的是为容器创建挂载点，将宿主机上的目录或文件挂载到容器内，使得容器可以访问或使用宿主机上的数据。</li>
+<li>这里的格式是 <code>宿主机目录:容器内目录</code>，具体如下：<ul>
+<li><code>./sql</code>：<ul>
+<li><code>./</code> 代表当前执行 <code>docker-compose</code> 命令的目录。</li>
+<li><code>./sql</code> 表示当前目录下的一个名为 <code>sql</code> 的子目录。</li>
+<li>该目录可能包含一些 SQL 文件或者初始化脚本。</li>
+</ul>
+</li>
+<li><code>/docker-entrypoint-initdb.d</code>：<ul>
+<li>这是容器内部 MySQL 预定义的一个目录。</li>
+<li>MySQL 官方镜像支持在容器启动时自动运行这个目录中的 SQL 脚本或 <code>.sh</code> 脚本。</li>
+<li>换句话说，当容器启动时，MySQL 会自动执行挂载到 <code>/docker-entrypoint-initdb.d</code> 中的 SQL 文件，来初始化数据库或执行其它 SQL 操作。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="举例场景："><a href="#举例场景：" class="headerlink" title="举例场景："></a>举例场景：</h4><p>假如宿主机 <code>./sql</code> 目录中有一个 <code>init.sql</code> 文件，内容为：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> DATABASE test_db;</span><br></pre></td></tr></table></figure>
+
+<p>当 <code>docker-compose up -d</code> 启动时，MySQL 容器会在启动过程中自动执行这个 <code>init.sql</code> 文件，从而创建一个名为 <code>test_db</code> 的数据库。</p>
+<h3 id="2-volumes-from"><a href="#2-volumes-from" class="headerlink" title="2. volumes_from:"></a>2. <code>volumes_from:</code></h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">volumes_from:</span></span><br><span class="line">  <span class="bullet">-</span> <span class="string">mysql-job-dbdata</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="解释：-1"><a href="#解释：-1" class="headerlink" title="解释："></a>解释：</h4><ul>
+<li><code>volumes_from</code> 是 Docker Compose 的一个配置选项，允许一个容器使用另一个容器所定义的 <strong>卷（volumes）</strong>。它可以让多个容器共享数据存储卷，达到数据共享或持久化的目的。</li>
+<li>在这里：<ul>
+<li><code>mysql-job-dbdata</code> 是另一个服务的名称，这个服务定义了卷（<code>volumes</code>）用于持久化 MySQL 数据。</li>
+<li>当前的 <code>mysql</code> 容器使用 <code>volumes_from</code> 选项从 <code>mysql-job-dbdata</code> 容器中继承了数据卷。这意味着 <code>mysql</code> 容器会使用 <code>mysql-job-dbdata</code> 容器的 <code>/var/lib/mysql</code> 卷来存储数据。</li>
+<li>MySQL 数据库的数据通常存储在 <code>/var/lib/mysql</code> 目录下。通过共享这个数据卷，即使 <code>mysql</code> 容器被销毁或者重新创建，数据仍然会被保存在 <code>mysql-job-dbdata</code> 容器对应的卷中，从而实现数据持久化。</li>
+</ul>
+</li>
+</ul>
+<h4 id="举例场景：-1"><a href="#举例场景：-1" class="headerlink" title="举例场景："></a>举例场景：</h4><p><code>mysql-job-dbdata</code> 容器是一个专门用于存储数据的容器，主要负责数据的持久化。<code>mysql</code> 容器则利用 <code>volumes_from</code> 从这个数据容器中共享了数据卷，因此当 <code>mysql</code> 容器写入或读取数据库数据时，这些数据都会保存在 <code>mysql-job-dbdata</code> 容器的卷中。</p>
+<h3 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h3><ul>
+<li><code>./sql:/docker-entrypoint-initdb.d</code>：把宿主机当前目录下的 <code>sql</code> 目录挂载到 MySQL 容器中的 <code>/docker-entrypoint-initdb.d</code> 目录下，容器启动时会自动执行这个目录中的 SQL 脚本来初始化数据库。</li>
+<li><code>volumes_from: - mysql-job-dbdata</code>：让 <code>mysql</code> 容器从 <code>mysql-job-dbdata</code> 容器中继承并共享数据卷（<code>/var/lib/mysql</code>），从而实现 MySQL 数据的持久化和共享，即使 <code>mysql</code> 容器重新启动，数据也不会丢失。</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">tags</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BB%A5%E4%B8%80%E4%B8%AAdocker-compose-yml%E6%96%87%E4%BB%B6%E6%9D%A5%E5%BC%80%E5%A7%8B%E8%BF%99%E7%AF%87%E5%8D%9A%E5%AE%A2%E5%90%A7%EF%BC%81"><span class="toc-number">1.</span> <span class="toc-text">1. 以一个docker-compose.yml文件来开始这篇博客吧！</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-mysql-%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.1.</span> <span class="toc-text">1.1. mysql 服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-mysql-job-dbdata-%E6%9C%8D%E5%8A%A1"><span class="toc-number">1.2.</span> <span class="toc-text">1.2. mysql-job-dbdata 服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E6%80%BB%E7%BB%93"><span class="toc-number">1.3.</span> <span class="toc-text">1.3. 总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%80%E4%B9%88%E6%98%AF%E5%AE%B9%E5%99%A8%EF%BC%9F"><span class="toc-number">2.</span> <span class="toc-text">2. 什么是容器？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E5%AE%B9%E5%99%A8%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-number">2.1.</span> <span class="toc-text">2.1. 容器的特点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E5%AE%B9%E5%99%A8%E4%B8%8E%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%9A%84%E6%AF%94%E8%BE%83"><span class="toc-number">2.2.</span> <span class="toc-text">2.2. 容器与虚拟机的比较</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E5%AE%B9%E5%99%A8%E7%9A%84%E7%BB%84%E6%88%90"><span class="toc-number">2.3.</span> <span class="toc-text">2.3. 容器的组成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E5%AE%B9%E5%99%A8%E7%9A%84%E7%AE%A1%E7%90%86%E4%B8%8E%E7%BC%96%E6%8E%92"><span class="toc-number">2.4.</span> <span class="toc-text">2.4. 容器的管理与编排</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">2.5.</span> <span class="toc-text">2.5. 使用场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6-%E6%80%BB%E7%BB%93"><span class="toc-number">2.6.</span> <span class="toc-text">2.6. 总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%BB%80%E4%B9%88%E6%98%AF%E9%95%9C%E5%83%8F%EF%BC%9F"><span class="toc-number">3.</span> <span class="toc-text">3. 什么是镜像？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E9%95%9C%E5%83%8F%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-number">3.1.</span> <span class="toc-text">3.1. 镜像的特点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E9%95%9C%E5%83%8F%E7%9A%84%E7%BB%84%E6%88%90"><span class="toc-number">3.2.</span> <span class="toc-text">3.2. 镜像的组成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%88%9B%E5%BB%BA%E9%95%9C%E5%83%8F"><span class="toc-number">3.3.</span> <span class="toc-text">3.3. 创建镜像</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E7%AE%A1%E7%90%86%E9%95%9C%E5%83%8F"><span class="toc-number">3.4.</span> <span class="toc-text">3.4. 管理镜像</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E9%95%9C%E5%83%8F%E4%B8%8E%E5%AE%B9%E5%99%A8%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.5.</span> <span class="toc-text">3.5. 镜像与容器的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-6-%E6%80%BB%E7%BB%93"><span class="toc-number">3.6.</span> <span class="toc-text">3.6. 总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%BB%80%E4%B9%88%E6%98%AFVolume%EF%BC%9F"><span class="toc-number">4.</span> <span class="toc-text">3. 什么是Volume？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-Volume-%E7%9A%84%E7%89%B9%E7%82%B9"><span class="toc-number">4.1.</span> <span class="toc-text">3.1. Volume 的特点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-Volume-%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="toc-number">4.2.</span> <span class="toc-text">3.2. Volume 的类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E4%BD%BF%E7%94%A8-Volume-%E7%9A%84%E7%A4%BA%E4%BE%8B"><span class="toc-number">4.3.</span> <span class="toc-text">3.3. 使用 Volume 的示例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E6%80%BB%E7%BB%93"><span class="toc-number">4.4.</span> <span class="toc-text">3.4. 总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%A1%A5%E5%85%85"><span class="toc-number">5.</span> <span class="toc-text">4. 补充</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-volumes"><span class="toc-number">5.1.</span> <span class="toc-text">1. volumes:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A3%E9%87%8A%EF%BC%9A"><span class="toc-number">5.1.1.</span> <span class="toc-text">解释：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BE%E4%BE%8B%E5%9C%BA%E6%99%AF%EF%BC%9A"><span class="toc-number">5.1.2.</span> <span class="toc-text">举例场景：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-volumes-from"><span class="toc-number">5.2.</span> <span class="toc-text">2. volumes_from:</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A3%E9%87%8A%EF%BC%9A-1"><span class="toc-number">5.2.1.</span> <span class="toc-text">解释：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BE%E4%BE%8B%E5%9C%BA%E6%99%AF%EF%BC%9A-1"><span class="toc-number">5.2.2.</span> <span class="toc-text">举例场景：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E7%BB%93%EF%BC%9A"><span class="toc-number">5.3.</span> <span class="toc-text">总结：</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&text=一个例子理解Docker生态系统"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&title=一个例子理解Docker生态系统"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&is_video=false&description=一个例子理解Docker生态系统"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=一个例子理解Docker生态系统&body=Check out this article: https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&title=一个例子理解Docker生态系统"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&title=一个例子理解Docker生态系统"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&title=一个例子理解Docker生态系统"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&title=一个例子理解Docker生态系统"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&name=一个例子理解Docker生态系统&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://liuhqing.github.io/2024/10/08/%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90%E7%90%86%E8%A7%A3Docker%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F/&t=一个例子理解Docker生态系统"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2024
+    Hanqing Liu
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">tags</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
